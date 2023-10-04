@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:todo_app/widgets/modal.dart';
 import 'package:todo_app/widgets/todo_tile.dart';
 
@@ -11,7 +12,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final _box = Hive.box('rayhan.dev.todo.db');
   List todoList = [];
+
+  @override
+  void initState() {
+    var tasks = _box.get("todos");
+    todoList.addAll(tasks);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +34,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context) => Modal(
               onSave: (taskName) {
                 setState(() => todoList.insert(0, [taskName, false]));
+                _box.put('todos', todoList);
                 Navigator.of(context).pop();
               },
               onCancel: () => Navigator.of(context).pop(),
@@ -70,6 +79,7 @@ class _HomePageState extends State<HomePage> {
                         onDelete: () {
                           setState(() {
                             todoList.removeAt(index);
+                            _box.put('todos', todoList);
                           });
                         },
                       );
