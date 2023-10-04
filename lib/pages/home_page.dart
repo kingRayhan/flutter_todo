@@ -18,7 +18,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     var tasks = _box.get("todos");
-    todoList.addAll(tasks);
+    if (tasks) {
+      todoList.addAll(tasks);
+    }
   }
 
   @override
